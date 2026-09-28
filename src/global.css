@@ -1,0 +1,97 @@
+@import "tailwindcss";
+
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  overflow-x: hidden;
+}
+
+:root {
+  /* ==========================================================================
+     BẢNG MÀU KÍCH THÍCH VỊ GIÁC (Fast Food / Pizza & Fried Chicken Style)
+     
+     Tâm lý học màu sắc ẩm thực:
+     - Màu chủ đạo (Primary): #C8102E (Đỏ tương ớt / Đỏ KFC-PizzaHut - Tăng nhịp tim, kích thích cơn thèm ăn)
+     - Màu phụ (Secondary): #FF9800 (Cam phô mai / Vàng gà rán - Gợi liên tưởng đến vỏ bánh giòn rụm, phô mai chảy)
+     - Màu điểm nhấn (Accent): #2E7D32 (Xanh lá húng tây / Basil Green - Tạo cảm giác nguyên liệu tươi ngon, cân bằng độ béo)
+     - Màu nền cơ sở (Base Background): #FFF8F0 (Trắng kem ấm / Vani - Nền ấm áp, làm tôn sắc đỏ/vàng của món ăn)
+     ========================================================================== */
+
+  /* 1. HỆ THỐNG MÀU NỀN (Background System) */
+  --bg-main: #fff8f0; /* Nền toàn trang: Trắng kem ấm, ngả vani dịu mắt, giữ năng lượng ấm cúng */
+  --bg-surface: #ffffff; /* Nền Card món ăn/Modal: Trắng tinh, tối ưu độ tương phản cho hình chụp đồ ăn */
+  --bg-subtle: #fff0e0; /* Nền Section xen kẽ: Kem cam nhạt, phân chia các khối nội dung mượt mà */
+  --bg-dark: #230b0b; /* Nền Footer/Header: Nâu đỏ đen nướng nướng (Burnt Charcoal), sang trọng và đậm chất nướng BBQ */
+  --bg-hero: #ffe8d6; /* Nền Hero banner: Vàng cam nhạt ngả bơ, làm nổi bật các Combo khuyến mãi */
+  --bg-overlay: #230b0bbf; /* Nền phủ mờ Popup: Tông nâu đỏ đen trong suốt giúp tập trung vào Modal */
+
+  /* 2. HỆ THỐNG CHỮ (Typography System) - Sử dụng tông nâu gỗ đậm thay cho màu đen thuần để giữ độ ấm */
+  --text-primary: #1f0a08; /* Chữ tiêu đề & Tên món: Nâu đen đậm, đạt chuẩn tương phản AAA trên nền kem */
+  --text-secondary: #5c3d35; /* Chữ mô tả & Thành phần: Nâu đất, giữ nét ấm áp cho dòng mô tả món ăn */
+  --text-muted: #9e7d75; /* Chữ phụ/Giá cũ gạch ngang: Nâu xám nhạt, không tranh chấp thị giác với giá sale */
+  --text-inverse: #ffffff; /* Chữ hiển thị trên nền tối hoặc trên nút (Contrast AA/AAA) */
+
+  /* 3. THÀNH PHẦN TƯƠNG TÁC & NÚT BẤM (Buttons & Interactivity) */
+
+  /* Nút Primary ("Đặt món ngay"): Đỏ rực rỡ - Thúc đẩy hành động mua hàng tức thì (Urgency) */
+  --btn-primary-default: #c8102e;
+  --btn-primary-hover: #a50b23; /* Đỏ đậm hơn khi Hover */
+  --btn-primary-active: #85071b; /* Đỏ sâu khi Active/Click */
+  --btn-primary-disabled: #e8a3ac; /* Đỏ nhạt vô hiệu hóa */
+
+  /* Nút Secondary ("Thêm vào giỏ"): Cam phô mai - Thúc đẩy tương tác phụ */
+  --btn-secondary-default: #ff9800;
+  --btn-secondary-hover: #e68900;
+  --btn-secondary-active: #cc7a00;
+
+  /* Nút Accent ("Mã giảm giá/Combo HOT"): Xanh húng tây tươi mát / Deal ngon */
+  --btn-accent-default: #2e7d32;
+  --btn-accent-hover: #236327;
+
+  /* Focus ring cho truy cập bàn phím (Accessibility) */
+  --focus-ring: #c8102e66; /* Quầng sáng Đỏ Primary khi focus */
+
+  /* 4. THÀNH PHẦN ĐẶC THÙ WEB ĐỒ ĂN (Food E-commerce Specials) */
+  --color-price: #c8102e; /* Màu giá tiền: Đỏ tươi bứt phá thị giác, thu hút ánh nhìn đầu tiên */
+  --bg-badge-discount: #ffebee; /* Nền nhãn Giảm giá: Đỏ hồng pastel nhạt */
+  --text-badge-discount: #c8102e; /* Chữ nhãn Giảm giá: Đỏ đậm nổi bật */
+  --color-rating-star: #ff9800; /* Màu sao đánh giá: Cam vàng ấm chuẩn UI các ứng dụng giao đồ ăn */
+
+  /* Nhãn phân loại món ăn (Tags) */
+  --tag-spicy: #d32f2f; /* Món cay nồng: Đỏ ớt rực */
+  --tag-veggie: #2e7d32; /* Món chay/Thêm rau: Xanh lá tươi */
+  --tag-hot: #ff5722; /* Bán chạy/Combo Hot: Cam đỏ rực rỡ */
+
+  /* 5. TRẠNG THÁI & PHẢN HỒI (Status & Feedback) */
+  --status-success: #2e7d32; /* Giao hàng thành công / Còn hàng: Xanh lá chuẩn */
+  --status-warning: #e65100; /* Sắp hết món / Cảnh báo cay: Cam sậm */
+  --status-error: #c8102e; /* Hết món / Đặt hàng thất bại: Đỏ báo lỗi */
+  --status-info: #0277bd; /* Thông báo khuyến mãi: Xanh dương trung tính */
+
+  /* 6. ĐƯỜNG VIỀN & ĐỔ BÓNG (Borders & Shadows) */
+  --border-light: #f3e1d3; /* Viền nhẹ cho Card món ăn: Tông kem đất nhạt */
+  --border-divider: #e6ccba; /* Viền phân cách nội dung */
+  --border-active: #c8102e; /* Viền khi Card được chọn/Highlight: Trùng màu Đỏ Primary */
+
+  /* Đổ bóng ngả sắc nâu đỏ nướng, tạo cảm giác nổi khối mềm mại và ấm áp */
+  --shadow-sm: 0 2px 8px #230b0b0f; /* Bóng nhẹ trên Card */
+  --shadow-md: 0 4px 16px #230b0b1a; /* Bóng mặc định cho Dropdown/Card hover */
+  --shadow-lg: 0 8px 24px #230b0b29; /* Bóng đậm cho Modal/Popup giỏ hàng */
+}
