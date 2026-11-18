@@ -24,6 +24,11 @@ import AdminAddOnPage from "./pages/Admin/AdminAddOnPage";
 import AdminComboPage from "./pages/Admin/AdminComboPage";
 import AdminEmployeePage from "./pages/Admin/AdminEmployeePage";
 
+import ShipperLayout from "./layouts/ShipperLayout";
+import ShipperPendingOrdersPage from "./pages/Shipper/ShipperPendingOrdersPage";
+import ShipperOrderHistoryPage from "./pages/Shipper/ShipperOrderHistoryPage";
+import ShipperOrderDetailPage from "./pages/Shipper/ShipperOrderDetailPage";
+
 function App() {
   return (
     <Routes>
@@ -49,6 +54,16 @@ function App() {
         <Route path="combo" element={<AdminComboPage />} />
         <Route path="setting" element={<AdminSettingPage />} />
         <Route path="employee" element={<AdminEmployeePage />} />
+      </Route>
+
+      <Route path="/shipper" element={<ShipperLayout />}>
+        <Route index element={<ShipperPendingOrdersPage />} />
+        <Route path="orders" element={<ShipperPendingOrdersPage />} />
+        <Route path="pending" element={<ShipperPendingOrdersPage />} />
+        <Route path="history" element={<ShipperOrderHistoryPage />} />
+        <Route path="active" element={<ShipperOrderDetailPage />} />
+        <Route path="detail" element={<ShipperOrderDetailPage />} />
+        <Route path="detail/:orderId" element={<ShipperOrderDetailPage />} />
       </Route>
 
       <Route path="*" element={<ErrorPage />}></Route>
