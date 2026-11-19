@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tag } from "lucide-react";
 
 import TopHeader from "../../components/TopHeader";
@@ -7,6 +7,7 @@ import ComboCard from "../../components/ComboCard";
 import CustomizerModal from "../../components/CustomizerModal";
 import HeroSection from "../../components/HeroSection";
 import CartDrawer from "../../components/CartDrawer";
+import { BannerLivePreview } from "../../components/BannerPreviewModal";
 
 import {
   MOCK_CATEGORIES,
@@ -14,7 +15,24 @@ import {
   MOCK_PRODUCTS,
 } from "../../data/mockData";
 
+function getActiveBanner() {
+  try {
+    const saved = localStorage.getItem("active_customer_hero_banner");
+    return saved ? JSON.parse(saved) : null;
+  } catch {
+    return null;
+  }
+}
+
 export default function CustomerHomePage() {
+  const [activeBanner, setActiveBanner] = useState(getActiveBanner);
+
+  useEffect(() => {
+    const syncBanner = () => setActiveBanner(getActiveBanner());
+    window.addEventListener("storage", syncBanner);
+    return () => window.removeEventListener("storage", syncBanner);
+  }, []);
+
   // State quản lý UI
   const [selectedCategory, setSelectedCategory] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
@@ -64,8 +82,14 @@ export default function CustomerHomePage() {
 
   return (
     <div className="min-h-screen flex flex-col justify-center items-center font-sans selection:bg-[var(--border-active)] selection:text-[var(--text-inverse)]">
-      <TopHeader />
-      <HeroSection />
+      {activeBanner ? (
+        <BannerLivePreview banner={activeBanner} />
+      ) : (
+        <>
+          <TopHeader />
+          <HeroSection />
+        </>
+      )}
 
       {/* Section Hot Combos */}
       <section
