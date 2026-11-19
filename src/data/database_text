@@ -1,0 +1,216 @@
+Table ROLE {
+  role_id INT [pk]
+  role_name VARCHAR(255) [unique, not null]
+}
+
+Table ACCOUNT {
+  account_id INT [pk]
+  role_id INT [not null]
+  username VARCHAR(255) [not null]
+  email VARCHAR(255) [not null, unique]
+  password VARCHAR(255) [not null]
+  point INT [not null, default: 0]
+  created_at TIMESTAMP [not null]
+}
+
+Table SHIPPING_INFO {
+  info_id INT [pk]
+  account_id INT [not null]
+  receiver_name VARCHAR(255) [not null]
+  phone_number VARCHAR(10) [not null]
+  city VARCHAR(255) [not null]
+  district VARCHAR(255) [not null]
+  address VARCHAR(255) [not null]
+}
+
+Table CART {
+  cart_id INT [pk]
+  account_id INT [not null]
+}
+
+Table CART_DETAIL {
+  cart_detail_id INT [pk]
+  cart_id INT [not null]
+  product_size_id INT
+  combo_id INT
+  quantity INT [not null, default: 1]
+}
+
+Table PRODUCT {
+  product_id INT [pk]
+  image VARCHAR(4000)
+  category_id INT [not null]
+  product_name VARCHAR(255) [unique, not null]
+  description VARCHAR(255)
+  created_at TIMESTAMP [not null]
+  status VARCHAR(255) [not null]
+  tag VARCHAR(255) [not null]
+  review_count INT [not null, default: 0]
+  total_rating INT [not null, default: 0]
+}
+
+Table SIZE {
+  size_id INT [pk]
+  size_name VARCHAR(255) [unique, not null]
+}
+
+Table PRODUCT_SIZE {
+  product_size_id INT [pk]
+  size_id INT [not null]
+  product_id INT [not null]
+  price DECIMAL(18,2) [not null]
+}
+
+Table ADD_ON {
+  addon_id INT [pk]
+  category_id INT
+  addon_name VARCHAR(255) [unique, not null]
+  price DECIMAL(18,2) [not null]
+  image VARCHAR(255)
+  description VARCHAR(255)
+}
+
+Table PRODUCT_ADDON {
+  product_addon_id INT [pk]
+  product_id INT [not null]
+  addon_id INT [not null]
+}
+
+Table STATUS {
+  status_id INT [pk]
+  status_name VARCHAR(255) [unique, not null]
+}
+
+Table ORDER {
+  order_id INT [pk]
+  payment_id INT [not null]
+  account_id INT [not null]
+  delivery_id INT
+  total DECIMAL(18,2) [not null]
+  earned_point INT [not null]
+  used_point INT [not null]
+  customer_note VARCHAR(255)
+  receiver_name VARCHAR(255) [not null]
+  phone_number VARCHAR(10) [not null]
+  full_address VARCHAR(1000) [not null]
+  cancel_reason VARCHAR(255)
+  rating INT [default: 0]
+}
+
+Table ORDER_DETAIL {
+  order_detail_id INT [pk]
+  order_id INT [not null]
+  product_size_id INT
+  combo_id INT
+  quantity INT [not null, default: 1]
+  unit_price DECIMAL(18,2) [not null]
+  total DECIMAL(18,2) [not null]
+}
+
+Table ORDER_STATUS {
+  order_status_id INT [pk]
+  status_id INT [not null]
+  order_id INT [not null]
+  created_at TIMESTAMP [not null]
+}
+
+Table PRODUCT_CATEGORY {
+  category_id INT [pk]
+  category_name VARCHAR(255) [unique, not null]
+}
+
+Table ADDON_CATEGORY {
+  category_id INT [pk]
+  category_name VARCHAR(255) [unique, not null]
+}
+
+Table PAYMENT_METHOD {
+  payment_id INT [pk]
+  payment_name VARCHAR(255) [unique, not null]
+}
+
+Table ADDON_CART_DETAIL {
+  addon_cart_detail_id INT [pk]
+  cart_id INT [not null]
+  addon_id INT [not null]
+}
+
+Table ADDON_ORDER_DETAIL {
+  addon_order_detail_id INT [pk]
+  order_detail_id INT [not null]
+  addon_id INT [not null]
+  price DECIMAL(18,2) [not null]
+}
+
+Table COMBO {
+  combo_id INT [pk]
+  combo_name VARCHAR(255) [unique, not null]
+  price DECIMAL(18, 2) [not null]
+  original_price DECIMAL(18, 2) [not null]
+  image VARCHAR(255)
+  description VARCHAR(255)
+  badge VARCHAR(255) [not null]
+  tag VARCHAR(255) [not null]
+  created_at TIMESTAMP [not null]
+  status VARCHAR(255) [not null]
+  review_count INT [not null, default: 0]
+  total_rating INT [not null, default: 0]
+}
+
+Table COMBO_DETAIL {
+  combo_detail_id INT [pk]
+  combo_id INT [not null]
+  product_size_id INT [not null]
+}
+
+Ref: "ADD_ON"."category_id" ?>? "ADDON_CATEGORY"."category_id"
+
+Ref: "CART"."account_id" ?> "ACCOUNT"."account_id"
+
+Ref: "ACCOUNT"."role_id" ?> "ROLE"."role_id"
+
+Ref: "ORDER"."payment_id" ?> "PAYMENT_METHOD"."payment_id"
+
+Ref: "ORDER_DETAIL"."order_id" ?> "ORDER"."order_id"
+
+Ref: "ADDON_CART_DETAIL"."cart_id" ?> "CART"."cart_id"
+
+Ref: "ADDON_CART_DETAIL"."addon_id" ?> "ADD_ON"."addon_id"
+
+Ref: "PRODUCT_SIZE"."product_id" ?> "PRODUCT"."product_id"
+
+Ref: "PRODUCT_SIZE"."size_id" ?> "SIZE"."size_id"
+
+Ref: "PRODUCT_ADDON"."product_id" ?> "PRODUCT"."product_id"
+
+Ref: "ORDER_STATUS"."status_id" ?> "STATUS"."status_id"
+
+Ref: "ORDER_STATUS"."order_id" ?> "ORDER"."order_id"
+
+Ref: "PRODUCT"."category_id" ?> "PRODUCT_CATEGORY"."category_id"
+
+Ref: "SHIPPING_INFO"."account_id" ?> "ACCOUNT"."account_id"
+
+Ref: "ORDER"."account_id" ?> "ACCOUNT"."account_id"
+
+Ref: "ADDON_ORDER_DETAIL"."order_detail_id" ?> "ORDER_DETAIL"."order_detail_id"
+
+Ref: "ADDON_ORDER_DETAIL"."addon_id" ?> "ADD_ON"."addon_id"
+
+Ref: "PRODUCT_ADDON"."addon_id" ?> "ADD_ON"."addon_id"
+
+Ref: "COMBO_DETAIL"."combo_id" ?> "COMBO"."combo_id"
+
+Ref: "COMBO_DETAIL"."product_size_id" ?> "PRODUCT_SIZE"."product_size_id"
+
+Ref: "ORDER_DETAIL"."combo_id" ?>? "COMBO"."combo_id"
+
+Ref: "ORDER_DETAIL"."product_size_id" ?>? "PRODUCT_SIZE"."product_size_id"
+
+Ref: "CART_DETAIL"."cart_id" ?> "CART"."cart_id"
+
+Ref: "CART_DETAIL"."product_size_id" ?>? "PRODUCT_SIZE"."product_size_id"
+
+Ref: "CART_DETAIL"."combo_id" ?>? "COMBO"."combo_id"
+
+Ref: "ORDER"."delivery_id" ?>? "ACCOUNT"."account_id"
