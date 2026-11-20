@@ -7,6 +7,7 @@ import ComboCard from "../../components/ComboCard";
 import CustomizerModal from "../../components/CustomizerModal";
 import HeroSection from "../../components/HeroSection";
 import CartDrawer from "../../components/CartDrawer";
+import { useCartStore } from "../../store/useCartStore";
 
 import {
   MOCK_CATEGORIES,
@@ -17,12 +18,11 @@ import {
 export default function CustomerHomePage() {
   // State quản lý UI
   const [selectedCategory, setSelectedCategory] = useState(0);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery] = useState("");
   const [isCartOpen, setIsCartOpen] = useState(false);
 
-  // State quản lý dữ liệu giỏ hàng và đặt hàng
-  const [cart, setCart] = useState([]);
-  const [orderFulfilled, setOrderFulfilled] = useState(false);
+  // Dùng giỏ hàng chung để món thêm ở Home xuất hiện cả trong Menu và trang Cart.
+  const addCombo = useCartStore((state) => state.addCombo);
 
   // State Modal tùy chỉnh món
   const [selectedProductModal, setSelectedProductModal] = useState(null);
@@ -48,17 +48,7 @@ export default function CustomerHomePage() {
 
   // Thêm Combo nhanh vào giỏ
   const handleAddComboToCart = (combo) => {
-    const newComboItem = {
-      cart_id: Date.now(),
-      type: "combo",
-      combo_id: combo.combo_id,
-      name: combo.combo_name,
-      size_name: "Standard Combo Box",
-      unit_price: combo.price,
-      quantity: 1,
-      addons: [],
-    };
-    setCart((prev) => [...prev, newComboItem]);
+    addCombo(combo);
     setIsCartOpen(true);
   };
 
@@ -117,8 +107,8 @@ export default function CustomerHomePage() {
                 onClick={() => setSelectedCategory(cat.category_id)}
                 className={`px-5 py-2.5 font-bold text-xs uppercase border-2 rounded-full transition-all ${
                   isActive
-                    ? "bg-[var(--btn-primary-default)] text-[var(--text-inverse)] border-[var(--btn-primary-default)] shadow-md"
-                    : "bg-[var(--bg-surface,#ffffff)] text-[var(--text-primary)] border-[var(--border-divider)] hover:border-[var(--btn-primary-default)]"
+                    ? "bg-[var(--btn-primary-default)] text-[var(--text-inverse)] border-[var(--btn-primary-default)] shadow-[var(--shadow-md)]"
+                    : "bg-[var(--bg-surface)] text-[var(--text-primary)] border-[var(--border-divider)] hover:border-[var(--btn-primary-default)]"
                 }`}
               >
                 {cat.category_name}
@@ -148,19 +138,12 @@ export default function CustomerHomePage() {
           selectedAddons={modalSelectedAddons}
           setSelectedAddons={setModalSelectedAddons}
           onClose={() => setSelectedProductModal(null)}
-          setCart={setCart}
           setIsCartOpen={setIsCartOpen}
         />
       )}
 
       {isCartOpen && (
-        <CartDrawer
-          cart={cart}
-          setCart={setCart}
-          onClose={() => setIsCartOpen(false)}
-          orderFulfilled={orderFulfilled}
-          setOrderFulfilled={setOrderFulfilled}
-        />
+        <CartDrawer onClose={() => setIsCartOpen(false)} />
       )}
     </div>
   );

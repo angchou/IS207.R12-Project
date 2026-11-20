@@ -1,6 +1,9 @@
-import React from "react";
-import { X, ShoppingBag } from "lucide-react";
-import { MOCK_ADDONS } from "../data/mockData"; // Đảm bảo đường dẫn đúng
+import { ShoppingBag, X } from "lucide-react";
+import { MOCK_ADDONS } from "../data/mockData";
+import { useCartStore } from "../store/useCartStore";
+import { formatCurrency, getItemUnitPrice } from "../utils/cart";
+import AddonSelector from "./AddonSelector";
+import Dialog from "./Dialog";
 
 export default function CustomizerModal({
   product,
@@ -9,156 +12,117 @@ export default function CustomizerModal({
   selectedAddons,
   setSelectedAddons,
   onClose,
-  setCart,
   setIsCartOpen,
 }) {
+  // 1. Lưu món theo product_size_id và danh sách addon vào cùng giỏ với trang Cart.
+  const addProduct = useCartStore((state) => state.addProduct);
+
   const handleAddToCartFromModal = () => {
     if (!product || !selectedSize) return;
-    const newItem = {
-      cart_id: Date.now(),
-      type: "product",
-      product_id: product.product_id,
-      name: product.product_name,
-      size_name: selectedSize.size_name,
-      unit_price: selectedSize.price,
-      quantity: 1,
-      addons: [...selectedAddons],
-    };
-    setCart((prev) => [...prev, newItem]);
+    addProduct(product, selectedSize, selectedAddons);
     onClose();
     setIsCartOpen(true);
   };
 
-  const currentTotal =
-    (selectedSize ? selectedSize.price : 0) +
-    selectedAddons.reduce((sum, a) => sum + a.price, 0);
+  // 2. Dùng chung cách tính tiền: giá size + giá từng món thêm.
+  const currentTotal = getItemUnitPrice({
+    unit_price: selectedSize?.price || 0,
+    addons: selectedAddons,
+  });
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#230b0b]/80 backdrop-blur-xs">
-      <div className="bg-white max-w-lg w-full border-4 border-[#230b0b] shadow-2xl relative overflow-hidden max-h-[90vh] flex flex-col">
-        <div className="bg-[#230b0b] text-white p-4 flex items-center justify-between">
-          <div>
-            <span className="text-[10px] text-amber-300 uppercase font-extrabold tracking-widest block">
-              Customize Your Meal
-            </span>
-            <h3 className="font-black text-lg text-white">
-              {product.product_name}
-            </h3>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-1 hover:bg-white/10 text-amber-100"
-          >
-            <X size={20} />
-          </button>
+    <Dialog onClose={onClose} labelledBy="customizer-title">
+      {/* 3. Tiêu đề cửa sổ; tất cả màu sắc lấy từ bảng màu global.css. */}
+      <div className="flex items-center justify-between gap-3 bg-[var(--bg-dark)] p-4 text-[var(--text-inverse)]">
+        <div>
+          <span className="block text-[10px] font-extrabold uppercase tracking-widest text-[var(--btn-secondary-default)]">
+            Customize your meal
+          </span>
+          <h2 id="customizer-title" className="text-lg font-black">
+            {product.product_name}
+          </h2>
         </div>
-
-        <div className="p-6 overflow-y-auto space-y-6">
-          <div className="flex gap-4 items-center bg-[#fff8f0] p-3 border border-[#f3e1d3]">
-            <img
-              src={product.image}
-              alt={product.product_name}
-              className="w-20 h-20 object-cover"
-            />
-            <p className="text-xs text-[#5c3d35]">{product.description}</p>
-          </div>
-
-          {/* Size Options */}
-          <div>
-            <label className="text-xs font-black uppercase tracking-wider text-[#1f0a08] block mb-2">
-              1. Select Serving Size <span className="text-[#c8102e]">*</span>
-            </label>
-            <div className="space-y-2">
-              {product.sizes.map((sizeObj) => {
-                const isSelected =
-                  selectedSize?.product_size_id === sizeObj.product_size_id;
-                return (
-                  <div
-                    key={sizeObj.product_size_id}
-                    onClick={() => setSelectedSize(sizeObj)}
-                    className={`p-3 border-2 cursor-pointer flex items-center justify-between transition-all ${isSelected ? "border-[#c8102e] bg-[#ffebee]" : "border-[#f3e1d3] hover:border-[#e6ccba]"}`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <div
-                        className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${isSelected ? "border-[#c8102e] bg-[#c8102e]" : "border-gray-400"}`}
-                      >
-                        {isSelected && (
-                          <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
-                        )}
-                      </div>
-                      <span className="font-bold text-sm text-[#1f0a08]">
-                        {sizeObj.size_name}
-                      </span>
-                    </div>
-                    <span className="font-black text-sm text-[#c8102e]">
-                      ${sizeObj.price.toFixed(2)}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Add-ons List */}
-          <div>
-            <label className="text-xs font-black uppercase tracking-wider text-[#1f0a08] block mb-2">
-              2. Choose Optional Add-Ons
-            </label>
-            <div className="space-y-2">
-              {MOCK_ADDONS.map((addon) => {
-                const isChecked = selectedAddons.some(
-                  (a) => a.addon_id === addon.addon_id,
-                );
-                return (
-                  <div
-                    key={addon.addon_id}
-                    onClick={() => {
-                      isChecked
-                        ? setSelectedAddons((prev) =>
-                            prev.filter((a) => a.addon_id !== addon.addon_id),
-                          )
-                        : setSelectedAddons((prev) => [...prev, addon]);
-                    }}
-                    className={`p-3 border cursor-pointer flex items-center justify-between ${isChecked ? "border-[#ff9800] bg-[#fff0e0]" : "border-[#f3e1d3] hover:border-[#e6ccba]"}`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <div
-                        className={`w-4 h-4 border flex items-center justify-center ${isChecked ? "bg-[#ff9800] border-[#ff9800]" : "border-gray-400"}`}
-                      >
-                        {isChecked && <X size={12} className="text-white" />}
-                      </div>
-                      <span className="font-medium text-xs text-[#1f0a08]">
-                        {addon.addon_name}
-                      </span>
-                    </div>
-                    <span className="font-bold text-xs text-[#5c3d35]">
-                      +${addon.price.toFixed(2)}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-
-        <div className="p-4 bg-[#fff8f0] border-t border-[#f3e1d3] flex items-center justify-between">
-          <div>
-            <span className="text-[10px] text-[#9e7d75] font-bold block uppercase">
-              Item Total
-            </span>
-            <span className="text-2xl font-black text-[#c8102e]">
-              ${currentTotal.toFixed(2)}
-            </span>
-          </div>
-          <button
-            onClick={handleAddToCartFromModal}
-            style={{ backgroundColor: "var(--btn-primary-default, #c8102e)" }}
-            className="px-6 py-3 font-bold text-xs uppercase text-white hover:bg-[#a50b23] transition-colors flex items-center gap-2 shadow rounded-full"
-          >
-            <ShoppingBag size={16} /> Confirm & Add To Cart
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close meal customizer"
+          className="rounded-full p-2 hover:bg-[var(--btn-primary-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--focus-ring)]"
+        >
+          <X size={20} aria-hidden="true" />
+        </button>
       </div>
-    </div>
+
+      <div className="min-h-0 space-y-6 overflow-y-auto p-5 sm:p-6">
+        <div className="flex items-center gap-4 border border-[var(--border-light)] bg-[var(--bg-main)] p-3">
+          <img src={product.image} alt={product.product_name} className="h-20 w-20 shrink-0 object-cover" />
+          <p className="text-xs leading-relaxed text-[var(--text-secondary)]">
+            {product.description}
+          </p>
+        </div>
+
+        {/* 4. Radio cho phép chọn đúng một size; vẫn dùng được bằng bàn phím. */}
+        <fieldset>
+          <legend className="mb-2 text-xs font-black uppercase tracking-wider text-[var(--text-primary)]">
+            1. Select serving size
+          </legend>
+          <div className="space-y-2">
+            {product.sizes.map((size) => {
+              const isSelected = selectedSize?.product_size_id === size.product_size_id;
+              return (
+                <label
+                  key={size.product_size_id}
+                  className={`flex cursor-pointer items-center justify-between gap-3 border-2 p-3 transition-colors ${
+                    isSelected
+                      ? "border-[var(--btn-primary-default)] bg-[var(--bg-badge-discount)]"
+                      : "border-[var(--border-light)] hover:border-[var(--border-divider)]"
+                  }`}
+                >
+                  <span className="flex items-center gap-2 text-sm font-bold text-[var(--text-primary)]">
+                    <input
+                      type="radio"
+                      name="serving-size"
+                      value={size.product_size_id}
+                      checked={isSelected}
+                      onChange={() => setSelectedSize(size)}
+                      className="h-4 w-4 shrink-0 accent-[var(--btn-primary-default)] focus:ring-2 focus:ring-[var(--focus-ring)]"
+                    />
+                    {size.size_name}
+                  </span>
+                  <span className="shrink-0 text-sm font-black text-[var(--color-price)]">
+                    {formatCurrency(size.price)}
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+        </fieldset>
+
+        {/* 5. Dùng cùng cách chọn món thêm với popup sửa món trong giỏ. */}
+        <AddonSelector
+          options={MOCK_ADDONS}
+          selectedAddons={selectedAddons}
+          onChange={setSelectedAddons}
+          legend="2. Choose optional add-ons"
+        />
+      </div>
+
+      {/* 6. Xác nhận chỉ thêm vào giỏ, giữ nguyên size/addon đã chọn khi đổi trang. */}
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--border-light)] bg-[var(--bg-main)] p-4">
+        <div>
+          <span className="block text-[10px] font-bold uppercase text-[var(--text-muted)]">Item total</span>
+          <span aria-live="polite" className="text-2xl font-black text-[var(--color-price)]">
+            {formatCurrency(currentTotal)}
+          </span>
+        </div>
+        <button
+          type="button"
+          onClick={handleAddToCartFromModal}
+          disabled={!selectedSize}
+          className="flex items-center gap-2 rounded-full bg-[var(--btn-primary-default)] px-6 py-3 text-xs font-bold uppercase text-[var(--text-inverse)] shadow-[var(--shadow-sm)] transition-colors hover:bg-[var(--btn-primary-hover)] disabled:cursor-not-allowed disabled:bg-[var(--btn-primary-disabled)] focus:outline-none focus:ring-2 focus:ring-[var(--focus-ring)]"
+        >
+          <ShoppingBag size={16} aria-hidden="true" /> Confirm & add to cart
+        </button>
+      </div>
+    </Dialog>
   );
 }

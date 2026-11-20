@@ -1,0 +1,131 @@
+/* Trên màn hình hẹp, nối tâm các mốc theo chiều dọc. */
+.delivery-steps {
+  --marker-size: 2rem;
+  --step-gap: 0.875rem;
+  display: grid;
+  row-gap: var(--step-gap);
+}
+
+.delivery-step {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--marker-size) minmax(0, 1fr);
+  align-items: start;
+  min-block-size: 2.75rem;
+  gap: 0.75rem;
+}
+
+.delivery-marker {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  inline-size: var(--marker-size);
+  block-size: var(--marker-size);
+  border: 1px solid var(--border-divider);
+  border-radius: 50%;
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.delivery-marker[data-state="complete"] {
+  border-color: var(--status-success);
+  background: var(--status-success);
+  color: var(--text-inverse);
+}
+
+.delivery-marker[data-state="active"] {
+  border: 2px solid var(--status-success);
+  color: var(--status-success);
+}
+
+.delivery-connector {
+  position: absolute;
+  inset-block-start: calc(var(--marker-size) / 2);
+  inset-inline-start: calc(var(--marker-size) / 2);
+  inline-size: 0.5rem;
+  block-size: calc(100% + var(--step-gap));
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  pointer-events: none;
+}
+
+.delivery-connector::before {
+  position: absolute;
+  content: "";
+  inline-size: 2px;
+  block-size: 100%;
+  background: var(--border-divider);
+}
+
+.delivery-connector[data-state="complete"]::before {
+  background: var(--status-success);
+}
+
+.delivery-dot {
+  position: relative;
+  flex: 0 0 auto;
+  inline-size: 0.375rem;
+  block-size: 0.375rem;
+  border-radius: 50%;
+  background: var(--text-muted);
+  box-shadow: 0 0 0 2px var(--bg-main);
+}
+
+/* Chấm giữa vẫn báo đoạn đang chạy khi thiết bị giảm chuyển động. */
+.delivery-dot:nth-child(2) {
+  background: var(--status-success);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .delivery-dot {
+    animation: delivery-dot-travel 1.45s ease-in-out infinite;
+  }
+
+  .delivery-dot:nth-child(2) {
+    animation-delay: 0.18s;
+  }
+
+  .delivery-dot:nth-child(3) {
+    animation-delay: 0.36s;
+  }
+}
+
+@keyframes delivery-dot-travel {
+  0%, 55%, 100% { background: var(--text-muted); }
+  22% { background: var(--status-success); }
+}
+
+/* Màn hình rộng đặt mốc thẳng hàng, với đường nối chạy ngang qua tâm. */
+@media (min-width: 48rem) {
+  .delivery-steps {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .delivery-step {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    padding-inline: 0.5rem;
+    text-align: center;
+  }
+
+  .delivery-connector {
+    inset-inline-start: 50%;
+    inline-size: 100%;
+    block-size: 0.5rem;
+    transform: translateY(-50%);
+    flex-direction: row;
+    gap: 0.5rem;
+  }
+
+  .delivery-connector::before {
+    inline-size: 100%;
+    block-size: 2px;
+  }
+}
