@@ -1,4 +1,5 @@
-import { Star, Plus, Flame, Sparkles } from "lucide-react";
+import { Star, Plus, Flame, Sparkles, PackageX } from "lucide-react";
+import { PRODUCT_STATUS } from "./productConstants";
 
 const renderTagBadge = (tag) => {
   if (tag === "spicy")
@@ -22,6 +23,8 @@ const renderTagBadge = (tag) => {
 
 export default function ProductCard({ product, onCustomize }) {
   const defaultSize = product?.sizes?.[0];
+  // Món hết hàng: khách vẫn thấy nhưng không đặt được
+  const isSoldOut = product.status === PRODUCT_STATUS.SOLD_OUT;
 
   return (
     <div className="bg-[var(--bg-surface,#ffffff)] border-2 border-[var(--border-light)] hover:border-[var(--btn-primary-default)] transition-all flex flex-col justify-between shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)]">
@@ -30,8 +33,17 @@ export default function ProductCard({ product, onCustomize }) {
           <img
             src={product.image}
             alt={product.product_name}
-            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+            className={`w-full h-full object-cover transition-transform duration-300 ${
+              isSoldOut ? "grayscale opacity-60" : "hover:scale-105"
+            }`}
           />
+          {isSoldOut && (
+            <div className="absolute inset-0 flex items-center justify-center bg-[var(--bg-overlay)]/40">
+              <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[var(--bg-dark)] text-[var(--text-inverse)] text-xs font-black uppercase tracking-wider shadow-[var(--shadow-md)]">
+                <PackageX size={14} /> Sold Out
+              </span>
+            </div>
+          )}
           <div className="absolute top-3 left-3">
             {renderTagBadge(product.tag)}
           </div>
@@ -66,12 +78,22 @@ export default function ProductCard({ product, onCustomize }) {
         </div>
 
         <div className="group">
-          <button
-            onClick={() => onCustomize(product)}
-            className="bg-[var(--btn-primary-default)] hover:bg-[var(--btn-primary-hover)] active:bg-[var(--btn-primary-active)] text-[var(--text-inverse,#ffffff)] px-4 py-2.5 font-bold text-xs uppercase transition flex items-center gap-1.5 shadow-[var(--shadow-sm)] rounded-full cursor-pointer group-hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-[var(--focus-ring)]"
-          >
-            <Plus size={16} /> Customize
-          </button>
+          {isSoldOut ? (
+            <button
+              type="button"
+              disabled
+              className="bg-[var(--btn-primary-disabled)] text-[var(--text-inverse,#ffffff)] px-4 py-2.5 font-bold text-xs uppercase flex items-center gap-1.5 rounded-full cursor-not-allowed"
+            >
+              <PackageX size={16} /> Sold Out
+            </button>
+          ) : (
+            <button
+              onClick={() => onCustomize(product)}
+              className="bg-[var(--btn-primary-default)] hover:bg-[var(--btn-primary-hover)] active:bg-[var(--btn-primary-active)] text-[var(--text-inverse,#ffffff)] px-4 py-2.5 font-bold text-xs uppercase transition flex items-center gap-1.5 shadow-[var(--shadow-sm)] rounded-full cursor-pointer group-hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-[var(--focus-ring)]"
+            >
+              <Plus size={16} /> Customize
+            </button>
+          )}
         </div>
       </div>
     </div>

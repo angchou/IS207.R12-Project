@@ -9,11 +9,14 @@ import HeroSection from "../../components/HeroSection";
 import CartDrawer from "../../components/CartDrawer";
 import { BannerLivePreview } from "../../components/BannerPreviewModal";
 
+import { useAdminCatalogStore } from "../../store/useAdminCatalogStore";
+import { isVisibleToCustomer } from "../../components/productConstants";
 import {
-  MOCK_CATEGORIES,
-  MOCK_COMBOS,
-  MOCK_PRODUCTS,
-} from "../../data/mockData";
+  buildSizeIndex,
+  groupComboItems,
+  getComboBlockers,
+  isComboVisibleToCustomer,
+} from "../../components/comboConstants";
 
 function getActiveBanner() {
   try {
@@ -47,15 +50,37 @@ export default function CustomerHomePage() {
   const [modalSelectedSize, setModalSelectedSize] = useState(null);
   const [modalSelectedAddons, setModalSelectedAddons] = useState([]);
 
+  // Món và danh mục lấy từ store dùng chung với Admin (món UNAVAILABLE bị ẩn với khách)
+  const products = useAdminCatalogStore((s) => s.products);
+  const categories = useAdminCatalogStore((s) => s.productCategories);
+  const combos = useAdminCatalogStore((s) => s.combos);
+  const comboDetails = useAdminCatalogStore((s) => s.comboDetails);
+
+  // Combo hiển thị cho khách: bỏ combo ngừng bán; combo có món Sold Out / Unavailable thì không đặt được
+  const sizeIndex = buildSizeIndex(products);
+  const visibleCombos = combos
+    .filter(isComboVisibleToCustomer)
+    .map((combo) => ({
+      combo,
+      isOrderable:
+        getComboBlockers(
+          groupComboItems(combo.combo_id, comboDetails, sizeIndex),
+        ).length === 0,
+    }));
+
   // Lọc sản phẩm dựa trên Danh mục và Tìm kiếm
-  const filteredProducts = MOCK_PRODUCTS.filter((prod) => {
-    const matchesCategory =
-      selectedCategory === 0 || prod.category_id === selectedCategory;
-    const matchesSearch =
-      prod.product_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      prod.description.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
+  const filteredProducts = products
+    .filter(isVisibleToCustomer)
+    .filter((prod) => {
+      const matchesCategory =
+        selectedCategory === 0 || prod.category_id === selectedCategory;
+      const matchesSearch =
+        prod.product_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (prod.description || "")
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase());
+      return matchesCategory && matchesSearch;
+    });
 
   // Xử lý mở Modal
   const openCustomizer = (product) => {
@@ -108,10 +133,11 @@ export default function CustomerHomePage() {
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-            {MOCK_COMBOS.map((combo) => (
+            {visibleCombos.map(({ combo, isOrderable }) => (
               <ComboCard
                 key={combo.combo_id}
                 combo={combo}
+                isOrderable={isOrderable}
                 onAddCombo={handleAddComboToCart}
               />
             ))}
@@ -133,7 +159,7 @@ export default function CustomerHomePage() {
 
         {/* Tab Danh mục */}
         <div className="flex items-center justify-start sm:justify-center gap-2 overflow-x-auto pb-4 mb-8 no-scrollbar">
-          {MOCK_CATEGORIES.map((cat) => {
+          {categories.map((cat) => {
             const isActive = selectedCategory === cat.category_id;
             return (
               <button
