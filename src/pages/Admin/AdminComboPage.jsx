@@ -193,10 +193,6 @@ export default function AdminComboPage() {
             <h1 className="text-2xl sm:text-4xl font-black text-[var(--text-primary)] uppercase tracking-tight">
               Combo Management
             </h1>
-            <p className="text-sm sm:text-base text-[var(--text-secondary)] font-medium mt-1">
-              Build combo deals from existing menu items, set a bundle price,
-              and switch combos on or off for customers.
-            </p>
           </div>
 
           <button

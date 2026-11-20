@@ -5,7 +5,6 @@ import {
   FolderPlus,
   UtensilsCrossed,
   CircleCheck,
-  PackageX,
   EyeOff,
   CheckCircle2,
   AlertCircle,
@@ -33,7 +32,7 @@ const STATUS_FILTERS = [
   })),
 ];
 
-// Chuẩn hóa trạng thái: giá trị lạ (không thuộc 3 trạng thái) xem như AVAILABLE
+// Chuẩn hóa trạng thái: giá trị lạ (không phải AVAILABLE / UNAVAILABLE) xem như AVAILABLE
 const normalizeStatus = (status) =>
   PRODUCT_STATUS_OPTIONS.some((opt) => opt.value === status)
     ? status
@@ -177,17 +176,19 @@ export default function AdminProductPage() {
     closeProductModal();
   };
 
-  // Đổi trạng thái món ngay trên bảng (Available / Sold Out / Unavailable)
-  const STATUS_TOAST = {
-    [PRODUCT_STATUS.AVAILABLE]: "is now available to customers.",
-    [PRODUCT_STATUS.SOLD_OUT]: "is now marked as sold out.",
-    [PRODUCT_STATUS.UNAVAILABLE]: "is now hidden from customers.",
-  };
-
-  const handleChangeStatus = (product, status) => {
-    if (normalizeStatus(product.status) === status) return;
-    setProductStatus(product.product_id, status);
-    triggerToast(`"${product.product_name}" ${STATUS_TOAST[status]}`);
+  // Gạt công tắc trên bảng: mở bán <-> ngừng bán (ngừng bán thì ẩn với khách)
+  const handleToggleStatus = (product) => {
+    const isAvailable =
+      normalizeStatus(product.status) === PRODUCT_STATUS.AVAILABLE;
+    setProductStatus(
+      product.product_id,
+      isAvailable ? PRODUCT_STATUS.UNAVAILABLE : PRODUCT_STATUS.AVAILABLE,
+    );
+    triggerToast(
+      isAvailable
+        ? `"${product.product_name}" is now hidden from customers.`
+        : `"${product.product_name}" is now available to customers.`,
+    );
   };
 
   // Thêm category món mới và chuyển sang tab của category đó
@@ -245,11 +246,6 @@ export default function AdminProductPage() {
             <h1 className="text-2xl sm:text-4xl font-black text-[var(--text-primary)] uppercase tracking-tight">
               Product Management
             </h1>
-            <p className="text-sm sm:text-base text-[var(--text-secondary)] font-medium mt-1">
-              Add menu items with sizes and add-ons, set each item as available,
-              sold out or unavailable (hidden from customers), and organize them
-              by category.
-            </p>
           </div>
 
           <div className="grid grid-cols-2 gap-2 w-full sm:flex sm:w-auto sm:gap-3 self-start lg:self-auto">
@@ -277,27 +273,22 @@ export default function AdminProductPage() {
         </div>
 
         {/* ================= 2. THẺ KPI TỔNG QUAN MÓN (TÁI SỬ DỤNG AdminKpiCard) ================= */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
-          <AdminKpiCard
-            title="Total Products"
-            value={productStats.total}
-            subtext={`${categories.length} categories`}
-            icon={<UtensilsCrossed size={22} />}
-            accentColor="var(--btn-primary-default)"
-          />
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-5">
+          <div className="col-span-2 sm:col-span-1 grid">
+            <AdminKpiCard
+              title="Total Products"
+              value={productStats.total}
+              subtext={`${categories.length} categories`}
+              icon={<UtensilsCrossed size={22} />}
+              accentColor="var(--btn-primary-default)"
+            />
+          </div>
           <AdminKpiCard
             title="Available"
             value={productStats.countByStatus[PRODUCT_STATUS.AVAILABLE] || 0}
             subtext="Customers can order"
             icon={<CircleCheck size={22} />}
             accentColor="var(--status-success)"
-          />
-          <AdminKpiCard
-            title="Sold Out"
-            value={productStats.countByStatus[PRODUCT_STATUS.SOLD_OUT] || 0}
-            subtext="Visible, cannot order"
-            icon={<PackageX size={22} />}
-            accentColor="var(--status-warning)"
           />
           <AdminKpiCard
             title="Unavailable"
@@ -395,7 +386,7 @@ export default function AdminProductPage() {
                       categoryName={getCategoryName(product.category_id)}
                       colorIndex={getCategoryColorIndex(product.category_id)}
                       addonNames={getAddonNames(product.product_id)}
-                      onChangeStatus={handleChangeStatus}
+                      onToggleStatus={handleToggleStatus}
                       onEdit={openEditModal}
                     />
                   ))
@@ -423,7 +414,7 @@ export default function AdminProductPage() {
                   categoryName={getCategoryName(product.category_id)}
                   colorIndex={getCategoryColorIndex(product.category_id)}
                   addonNames={getAddonNames(product.product_id)}
-                  onChangeStatus={handleChangeStatus}
+                  onToggleStatus={handleToggleStatus}
                   onEdit={openEditModal}
                 />
               ))
