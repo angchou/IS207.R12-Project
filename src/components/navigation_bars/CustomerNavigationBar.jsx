@@ -36,7 +36,7 @@ export default function CustomerNavigationBar() {
   };
 
   return (
-    <nav className="fixed top-0 z-50 w-full bg-[var(--bg-surface)] shadow-[var(--shadow-sm)] border-b border-[var(--border-light)] transition-all duration-300">
+    <nav className="fixed top-0 z-50 w-full bg-[var(--bg-surface)] shadow-[var(--shadow-sm)] border-[var(--border-light)] transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-[72px]">
           <Link onClick={() => setIsMobileMenuOpen(false)}
@@ -83,9 +83,6 @@ export default function CustomerNavigationBar() {
               </div>
             </div>
 
-            <Link onClick={() => setIsMobileMenuOpen(false)} to="/store" className={getDesktopLinkStyle("/store")}>
-              Store
-            </Link>
             <Link
               to="/history"
               aria-current={currentPath === "/history" ? "page" : undefined}
@@ -137,9 +134,6 @@ export default function CustomerNavigationBar() {
             </Link>
             <Link onClick={() => setIsMobileMenuOpen(false)} to="/menu" className={getMobileLinkStyle("/menu")}>
               Menu
-            </Link>
-            <Link onClick={() => setIsMobileMenuOpen(false)} to="/store" className={getMobileLinkStyle("/store")}>
-              Store
             </Link>
             <Link
               to="/history"

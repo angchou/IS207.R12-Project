@@ -1,24 +1,23 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useLocation } from "react-router-dom";
 import {
   Menu as MenuIcon,
   X,
   Bike,
-  Package,
-  MapPin,
-  ClipboardList,
   LogOut,
-  Bell,
 } from "lucide-react";
+import { useShipperOrderStore } from "../../store/useShipperOrderStore";
 
 export default function ShipperNavigationBar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [currentPath, setCurrentPath] = useState("");
+  const location = useLocation();
+  const currentPath = location.pathname;
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setCurrentPath(window.location.pathname);
-    }
-  }, []);
+  useShipperOrderStore((state) => state.currentShipperId);
+  const getCurrentShipper = useShipperOrderStore(
+    (state) => state.getCurrentShipper
+  );
+  const activeShipper = getCurrentShipper();
 
   const getDesktopLinkStyle = (path) => {
     const isActive =
@@ -39,7 +38,7 @@ export default function ShipperNavigationBar() {
   };
 
   return (
-    <nav className="fixed top-0 z-50 w-full bg-[var(--bg-surface,#ffffff)] shadow-[var(--shadow-sm)] border-b border-[var(--border-light)] transition-all duration-300">
+    <nav className="fixed top-0 z-50 w-full bg-[var(--bg-surface,#ffffff)] shadow-[var(--shadow-sm)] border-[var(--border-light)] transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-[72px]">
           {/* Logo */}
@@ -62,42 +61,34 @@ export default function ShipperNavigationBar() {
               href="/shipper/orders"
               className={getDesktopLinkStyle("/shipper/orders")}
             >
-              <Package size={18} /> Pending Orders
+              Pending Orders
             </a>
 
             <a
               href="/shipper/active"
               className={getDesktopLinkStyle("/shipper/active")}
             >
-              <MapPin size={18} /> Active Deliveries
+              Active Deliveries
             </a>
 
             <a
               href="/shipper/history"
               className={getDesktopLinkStyle("/shipper/history")}
             >
-              <ClipboardList size={18} /> Order History
+              Order History
             </a>
           </div>
 
           {/* Right Side Actions */}
           <div className="flex items-center gap-4">
-            {/* Notifications */}
-            <button className="relative text-[var(--text-secondary)] hover:text-[var(--btn-primary-default)] transition-colors rounded-full p-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[var(--focus-ring)]">
-              <Bell size={24} />
-              <span className="absolute top-0 right-0 flex items-center justify-center w-5 h-5 text-[11px] font-bold text-[var(--text-inverse,#ffffff)] bg-[var(--btn-secondary-default,red)] border-2 border-[var(--bg-surface,#ffffff)] rounded-full shadow-[var(--shadow-sm)]">
-                2
-              </span>
-            </button>
-
             {/* Shipper Profile / Logout */}
             <div className="hidden md:flex items-center gap-3 border-l border-[var(--border-light)] pl-4">
               <div className="flex flex-col items-end">
                 <span className="text-sm font-bold text-[var(--text-primary)]">
-                  John Doe
+                  {activeShipper.username}
                 </span>
                 <span className="text-xs font-semibold text-[var(--text-secondary)]">
-                  Delivery Partner
+                  account_id #{activeShipper.account_id}
                 </span>
               </div>
               <button className="flex items-center justify-center p-2.5 bg-[var(--bg-subtle)] hover:bg-[var(--btn-primary-hover)] hover:text-[var(--text-inverse,#ffffff)] text-[var(--text-primary)] rounded-full font-bold transition-all shadow-[var(--shadow-sm)] focus:outline-none focus:ring-2 focus:ring-[var(--focus-ring)]">
@@ -127,10 +118,10 @@ export default function ShipperNavigationBar() {
               </div>
               <div>
                 <div className="text-sm font-bold text-[var(--text-primary)]">
-                  John Doe
+                  {activeShipper.username}
                 </div>
                 <div className="text-xs font-semibold text-[var(--text-secondary)]">
-                  Online
+                  account_id #{activeShipper.account_id}
                 </div>
               </div>
             </div>
@@ -140,19 +131,19 @@ export default function ShipperNavigationBar() {
               href="/shipper/orders"
               className={getMobileLinkStyle("/shipper/orders")}
             >
-              <Package size={20} /> Pending Orders
+              Pending Orders
             </a>
             <a
               href="/shipper/active"
               className={getMobileLinkStyle("/shipper/active")}
             >
-              <MapPin size={20} /> Active Deliveries
+              Active Deliveries
             </a>
             <a
               href="/shipper/history"
               className={getMobileLinkStyle("/shipper/history")}
             >
-              <ClipboardList size={20} /> Order History
+              Order History
             </a>
 
             <hr className="border-[var(--border-light)] my-2" />

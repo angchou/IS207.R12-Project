@@ -6,7 +6,9 @@ import ProductCard from "../../components/ProductCard";
 import CustomizerModal from "../../components/CustomizerModal";
 import CartDrawer from "../../components/CartDrawer";
 // Import Mock Data
-import { MOCK_CATEGORIES, MOCK_PRODUCTS } from "../../data/mockData";
+import { useAdminCatalogStore } from "../../store/useAdminCatalogStore";
+import { isVisibleToCustomer } from "../../components/productConstants";
+import { MOCK_CATEGORIES } from "../../data/mockData";
 
 export default function CustomerMenuPage() {
   // Đọc danh mục từ URL để menu thả xuống trên thanh điều hướng hoạt động đồng bộ.
@@ -26,15 +28,23 @@ export default function CustomerMenuPage() {
   const [modalSelectedSize, setModalSelectedSize] = useState(null);
   const [modalSelectedAddons, setModalSelectedAddons] = useState([]);
 
+  // Món và danh mục lấy từ store dùng chung với Admin (món UNAVAILABLE bị ẩn với khách)
+  const products = useAdminCatalogStore((s) => s.products);
+  const categories = useAdminCatalogStore((s) => s.productCategories);
+
   // Lọc sản phẩm
-  const filteredProducts = MOCK_PRODUCTS.filter((prod) => {
-    const matchesCategory =
-      selectedCategory === 0 || prod.category_id === selectedCategory;
-    const matchesSearch =
-      prod.product_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      prod.description.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
+  const filteredProducts = products
+    .filter(isVisibleToCustomer)
+    .filter((prod) => {
+      const matchesCategory =
+        selectedCategory === 0 || prod.category_id === selectedCategory;
+      const matchesSearch =
+        prod.product_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (prod.description || "")
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase());
+      return matchesCategory && matchesSearch;
+    });
 
   const openCustomizer = (product) => {
     setSelectedProductModal(product);
@@ -74,7 +84,7 @@ export default function CustomerMenuPage() {
             </h3>
 
             <div className="space-y-1.5">
-              {MOCK_CATEGORIES.map((cat) => {
+              {categories.map((cat) => {
                 const isActive = selectedCategory === cat.category_id;
                 return (
                   <button
@@ -99,7 +109,7 @@ export default function CustomerMenuPage() {
           {/* Search Bar */}
           <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <h2 className="text-2xl font-black uppercase tracking-tight text-[var(--text-primary)]">
-              {MOCK_CATEGORIES.find((c) => c.category_id === selectedCategory)
+              {categories.find((c) => c.category_id === selectedCategory)
                 ?.category_name || "All Menu"}
             </h2>
 
