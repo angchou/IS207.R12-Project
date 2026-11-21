@@ -59,7 +59,7 @@ export function isProductOrderable(product) {
   return Boolean(product) && product.status === PRODUCT_STATUS.AVAILABLE;
 }
 
-// Danh sách món làm combo không đặt được (món SOLD_OUT / UNAVAILABLE hoặc không còn tồn tại)
+// Danh sách món làm combo không đặt được (món UNAVAILABLE hoặc không còn tồn tại)
 export function getComboBlockers(items) {
   const blockers = [];
   items.forEach((item) => {

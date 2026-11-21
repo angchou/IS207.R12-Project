@@ -1,6 +1,6 @@
 import { Plus, Ban } from "lucide-react";
 
-// isOrderable = false khi combo có món đang Sold Out / Unavailable: vẫn hiện nhưng không đặt được
+// isOrderable = false khi combo có món đang ngừng bán (Unavailable): vẫn hiện nhưng không đặt được
 export default function ComboCard({ combo, onAddCombo, isOrderable = true }) {
   return (
     <div className="bg-[var(--bg-surface,#ffffff)] border-2 border-[var(--border-light)] hover:border-[var(--btn-primary-default)] transition-all flex flex-col justify-between shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)]">

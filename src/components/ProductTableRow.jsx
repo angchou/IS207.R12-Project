@@ -1,12 +1,8 @@
-import { Edit, ChevronDown } from "lucide-react";
+import { Edit } from "lucide-react";
 import CategoryBadge from "./CategoryBadge";
 import { ImageThumbnail } from "./ImageInputField";
-import {
-  PRODUCT_STATUS,
-  PRODUCT_STATUS_OPTIONS,
-  getProductStatusMeta,
-  getProductTagMeta,
-} from "./productConstants";
+import StatusToggle from "./StatusToggle";
+import { PRODUCT_STATUS, getProductTagMeta } from "./productConstants";
 
 // Mã hiển thị của món, ví dụ #PRD-001
 export function ProductCode({ productId, className = "text-xs" }) {
@@ -56,43 +52,6 @@ export function ProductSizePrices({ sizes }) {
   );
 }
 
-// Ô chọn trạng thái món ngay trên bảng: Available / Sold Out / Unavailable (chỉ Admin thấy)
-export function ProductStatusSelect({ status, productName, onChange }) {
-  const meta = getProductStatusMeta(status);
-  const Icon = meta.icon;
-  return (
-    <label
-      title={meta.description}
-      className={`relative inline-flex items-center rounded-full border transition-colors focus-within:ring-2 focus-within:ring-[var(--focus-ring)] ${meta.pillClasses}`}
-    >
-      <Icon
-        size={13}
-        className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
-      />
-      <select
-        value={meta.value}
-        onChange={(e) => onChange(e.target.value)}
-        aria-label={`Status of ${productName}`}
-        className="appearance-none bg-transparent pl-8 pr-8 py-2 rounded-full text-xs font-black uppercase cursor-pointer focus:outline-none"
-      >
-        {PRODUCT_STATUS_OPTIONS.map((opt) => (
-          <option
-            key={opt.value}
-            value={opt.value}
-            className="bg-[var(--bg-surface)] text-[var(--text-primary)]"
-          >
-            {opt.label}
-          </option>
-        ))}
-      </select>
-      <ChevronDown
-        size={13}
-        className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
-      />
-    </label>
-  );
-}
-
 // Toàn bộ add-on đang gắn với món (PRODUCT_ADDON), hiển thị dạng chip tự xuống dòng
 export function ProductAddonSummary({ addonNames }) {
   if (addonNames.length === 0) {
@@ -122,14 +81,14 @@ export default function ProductTableRow({
   categoryName,
   colorIndex,
   addonNames,
-  onChangeStatus,
+  onToggleStatus,
   onEdit,
 }) {
-  const isAvailable = product.status === PRODUCT_STATUS.AVAILABLE;
+  const isAvailable = product.status !== PRODUCT_STATUS.UNAVAILABLE;
 
   return (
     <tr className="hover:bg-[var(--bg-main)] transition-colors">
-      {/* Cột Món: ảnh + tên + mã + nhãn (mờ đi khi hết hàng / ngừng bán) */}
+      {/* Cột Món: ảnh + tên + mã + nhãn (mờ đi khi ngừng bán) */}
       <td className="px-6 py-4">
         <div
           className={`flex items-center gap-3 ${isAvailable ? "" : "opacity-60"}`}
@@ -166,12 +125,12 @@ export default function ProductTableRow({
         <ProductAddonSummary addonNames={addonNames} />
       </td>
 
-      {/* Cột Trạng thái bán */}
+      {/* Cột Trạng thái bán: công tắc mở bán / ngừng bán */}
       <td className="px-6 py-4">
-        <ProductStatusSelect
-          status={product.status}
-          productName={product.product_name}
-          onChange={(status) => onChangeStatus(product, status)}
+        <StatusToggle
+          isOn={isAvailable}
+          itemName={product.product_name}
+          onToggle={() => onToggleStatus(product)}
         />
       </td>
 

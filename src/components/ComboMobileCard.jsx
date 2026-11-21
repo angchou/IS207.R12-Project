@@ -7,8 +7,8 @@ import {
   ComboBlockedBadge,
   ComboItemList,
   ComboPrice,
-  ComboStatusToggle,
 } from "./ComboTableRow";
+import StatusToggle from "./StatusToggle";
 import { COMBO_STATUS } from "./comboConstants";
 
 // Thẻ hiển thị một combo trên điện thoại (thay cho dòng bảng khi màn hình nhỏ hơn md)
@@ -56,9 +56,9 @@ export default function ComboMobileCard({
 
       {/* Trạng thái + nút Sửa */}
       <div className="flex items-center justify-between gap-2 pt-1">
-        <ComboStatusToggle
-          status={combo.status}
-          comboName={combo.combo_name}
+        <StatusToggle
+          isOn={isOn}
+          itemName={combo.combo_name}
           onToggle={() => onToggleStatus(combo)}
         />
         <button

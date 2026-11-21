@@ -1,16 +1,8 @@
-import {
-  Flame,
-  Sparkles,
-  Star,
-  CircleCheck,
-  PackageX,
-  EyeOff,
-} from "lucide-react";
+import { Flame, Sparkles, Star, CircleCheck, EyeOff } from "lucide-react";
 
-// Trạng thái bán của món (cột PRODUCT.status)
+// Trạng thái bán của món (cột PRODUCT.status): chỉ có mở bán / ngừng bán
 export const PRODUCT_STATUS = {
-  AVAILABLE: "AVAILABLE", // Có thể chọn: khách thấy và đặt được
-  SOLD_OUT: "SOLD_OUT", // Hết hàng: khách vẫn thấy nhưng không đặt được
+  AVAILABLE: "AVAILABLE", // Mở bán: khách thấy và đặt được
   UNAVAILABLE: "UNAVAILABLE", // Ngừng bán: chỉ Admin thấy, ẩn hoàn toàn với khách
 };
 
@@ -25,16 +17,6 @@ export const PRODUCT_STATUS_OPTIONS = [
       "bg-[var(--status-success)]/10 text-[var(--status-success)] border-[var(--status-success)]/40",
     activeClasses:
       "bg-[var(--status-success)] text-[var(--text-inverse)] border-[var(--status-success)]",
-  },
-  {
-    value: PRODUCT_STATUS.SOLD_OUT,
-    label: "Sold Out",
-    description: "Visible to customers, cannot order",
-    icon: PackageX,
-    pillClasses:
-      "bg-[var(--status-warning)]/10 text-[var(--status-warning)] border-[var(--status-warning)]/40",
-    activeClasses:
-      "bg-[var(--status-warning)] text-[var(--text-inverse)] border-[var(--status-warning)]",
   },
   {
     value: PRODUCT_STATUS.UNAVAILABLE,
@@ -56,7 +38,7 @@ export function getProductStatusMeta(status) {
   );
 }
 
-// Món có hiển thị cho khách không (mọi trạng thái trừ UNAVAILABLE)
+// Món có hiển thị cho khách không (ngừng bán thì ẩn)
 export function isVisibleToCustomer(product) {
   return product.status !== PRODUCT_STATUS.UNAVAILABLE;
 }

@@ -56,7 +56,7 @@ export default function CustomerHomePage() {
   const combos = useAdminCatalogStore((s) => s.combos);
   const comboDetails = useAdminCatalogStore((s) => s.comboDetails);
 
-  // Combo hiển thị cho khách: bỏ combo ngừng bán; combo có món Sold Out / Unavailable thì không đặt được
+  // Combo hiển thị cho khách: bỏ combo ngừng bán; combo có món ngừng bán (Unavailable) thì không đặt được
   const sizeIndex = buildSizeIndex(products);
   const visibleCombos = combos
     .filter(isComboVisibleToCustomer)

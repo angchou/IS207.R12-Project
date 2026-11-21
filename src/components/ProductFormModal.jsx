@@ -236,10 +236,10 @@ export default function ProductFormModal({
               </select>
             </div>
 
-            {/* Trạng thái bán: Available / Sold Out / Unavailable (chỉ Admin thấy) */}
+            {/* Trạng thái bán: Available (mở bán) / Unavailable (ngừng bán, chỉ Admin thấy) */}
             <div>
               <label className={LABEL_CLASS}>Availability</label>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {PRODUCT_STATUS_OPTIONS.map((opt) => {
                   const isActive = formData.status === opt.value;
                   const Icon = opt.icon;

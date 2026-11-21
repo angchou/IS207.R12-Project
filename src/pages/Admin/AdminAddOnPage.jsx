@@ -219,10 +219,6 @@ export default function AdminAddOnPage() {
             <h1 className="text-2xl sm:text-4xl font-black text-[var(--text-primary)] uppercase tracking-tight">
               Add-on Management
             </h1>
-            <p className="text-sm sm:text-base text-[var(--text-secondary)] font-medium mt-1">
-              Manage extra toppings, sauces and sides that customers can add to
-              their meals, grouped by add-on category.
-            </p>
           </div>
 
           <div className="grid grid-cols-2 gap-2 w-full sm:flex sm:w-auto sm:gap-3 self-start lg:self-auto">

@@ -197,7 +197,7 @@ export const useAdminCatalogStore = create(
         });
       },
 
-      // Đổi trạng thái món: AVAILABLE (có thể chọn) / SOLD_OUT (hết hàng) / UNAVAILABLE (chỉ Admin thấy)
+      // Đổi trạng thái món: AVAILABLE (mở bán) / UNAVAILABLE (ngừng bán, chỉ Admin thấy)
       setProductStatus: (productId, status) =>
         set((state) => ({
           products: state.products.map((p) =>
@@ -272,6 +272,14 @@ export const useAdminCatalogStore = create(
         productAddons: state.productAddons,
         combos: state.combos,
         comboDetails: state.comboDetails,
+      }),
+      // Phiên bản 1: bỏ trạng thái SOLD_OUT -> dữ liệu cũ đã lưu chuyển sang UNAVAILABLE (ngừng bán)
+      version: 1,
+      migrate: (persistedState) => ({
+        ...persistedState,
+        products: (persistedState?.products || []).map((p) =>
+          p.status === "SOLD_OUT" ? { ...p, status: "UNAVAILABLE" } : p,
+        ),
       }),
     },
   ),

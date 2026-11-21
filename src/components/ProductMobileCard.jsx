@@ -5,9 +5,9 @@ import {
   ProductCode,
   ProductTagBadge,
   ProductSizePrices,
-  ProductStatusSelect,
   ProductAddonSummary,
 } from "./ProductTableRow";
+import StatusToggle from "./StatusToggle";
 import { PRODUCT_STATUS } from "./productConstants";
 
 // Thẻ hiển thị một món trên điện thoại (thay cho dòng bảng khi màn hình nhỏ hơn md)
@@ -16,10 +16,10 @@ export default function ProductMobileCard({
   categoryName,
   colorIndex,
   addonNames,
-  onChangeStatus,
+  onToggleStatus,
   onEdit,
 }) {
-  const isAvailable = product.status === PRODUCT_STATUS.AVAILABLE;
+  const isAvailable = product.status !== PRODUCT_STATUS.UNAVAILABLE;
 
   return (
     <div className="p-4 space-y-3">
@@ -56,10 +56,10 @@ export default function ProductMobileCard({
 
       {/* Trạng thái bán + nút Sửa */}
       <div className="flex items-center justify-between gap-2 pt-1">
-        <ProductStatusSelect
-          status={product.status}
-          productName={product.product_name}
-          onChange={(status) => onChangeStatus(product, status)}
+        <StatusToggle
+          isOn={isAvailable}
+          itemName={product.product_name}
+          onToggle={() => onToggleStatus(product)}
         />
         <button
           type="button"

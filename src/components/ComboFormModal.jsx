@@ -112,7 +112,7 @@ export default function ComboFormModal({
     clearError();
   };
 
-  // Món đã chọn kèm thông tin món/size hiện tại (để biết món có bị Sold Out / Unavailable không)
+  // Món đã chọn kèm thông tin món/size hiện tại (để biết món có đang ngừng bán không)
   const detailedItems = items.map((item) => ({
     ...item,
     product: sizeIndex[item.product_size_id]?.product || null,

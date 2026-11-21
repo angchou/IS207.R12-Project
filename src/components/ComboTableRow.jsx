@@ -1,6 +1,7 @@
 import { Edit, AlertTriangle } from "lucide-react";
 import { ImageThumbnail } from "./ImageInputField";
 import { ProductTagBadge } from "./ProductTableRow";
+import StatusToggle from "./StatusToggle";
 import { COMBO_STATUS, isProductOrderable } from "./comboConstants";
 
 // Mã hiển thị của combo, ví dụ #CMB-501
@@ -22,7 +23,7 @@ export function ComboBadge({ badge }) {
   );
 }
 
-// Cảnh báo combo không đặt được vì có món Sold Out / Unavailable
+// Cảnh báo combo không đặt được vì có món đang ngừng bán (Unavailable)
 export function ComboBlockedBadge({ blockers }) {
   if (blockers.length === 0) return null;
   const detail = blockers
@@ -38,7 +39,7 @@ export function ComboBlockedBadge({ blockers }) {
   );
 }
 
-// Danh sách đầy đủ các món trong combo: "2 × Tên (M)"; món Sold Out / Unavailable hiện màu cảnh báo
+// Danh sách đầy đủ các món trong combo: "2 × Tên (M)"; món Unavailable hiện màu cảnh báo
 export function ComboItemList({ items }) {
   if (items.length === 0) {
     return (
@@ -98,40 +99,6 @@ export function ComboPrice({ price, originalPrice }) {
   );
 }
 
-// Công tắc mở bán / ngừng bán combo ngay trên bảng (AVAILABLE <-> UNAVAILABLE)
-export function ComboStatusToggle({ status, comboName, onToggle }) {
-  const isOn = status !== COMBO_STATUS.UNAVAILABLE;
-  return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={isOn}
-      aria-label={`${isOn ? "Stop selling" : "Start selling"} ${comboName}`}
-      onClick={onToggle}
-      className="inline-flex items-center gap-2 py-1.5 rounded-full cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
-    >
-      <span
-        className={`relative w-10 h-6 rounded-full transition-colors shrink-0 ${
-          isOn ? "bg-[var(--status-success)]" : "bg-[var(--border-divider)]"
-        }`}
-      >
-        <span
-          className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-[var(--bg-surface)] shadow-[var(--shadow-sm)] transition-transform ${
-            isOn ? "translate-x-4" : ""
-          }`}
-        />
-      </span>
-      <span
-        className={`text-xs font-black uppercase whitespace-nowrap ${
-          isOn ? "text-[var(--status-success)]" : "text-[var(--text-muted)]"
-        }`}
-      >
-        {isOn ? "Available" : "Unavailable"}
-      </span>
-    </button>
-  );
-}
-
 // Component một dòng combo trong bảng quản lý (màn hình từ md trở lên)
 export default function ComboTableRow({
   combo,
@@ -178,9 +145,9 @@ export default function ComboTableRow({
 
       {/* Cột Trạng thái */}
       <td className="px-6 py-4">
-        <ComboStatusToggle
-          status={combo.status}
-          comboName={combo.combo_name}
+        <StatusToggle
+          isOn={isOn}
+          itemName={combo.combo_name}
           onToggle={() => onToggleStatus(combo)}
         />
       </td>
